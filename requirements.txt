@@ -1,0 +1,7 @@
+flask>=3.0.0
+python-dotenv>=1.0.0
+google-genai>=0.3.0
+fuzzywuzzy>=0.18.0
+python-Levenshtein>=0.12.2  # optional but speeds up fuzzywuzzy
+# Optional for local_ai (llama.cpp integration):
+# llama-cpp-python>=0.2.0
