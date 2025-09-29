@@ -57,7 +57,7 @@ flask run
 macOS/Linux (bash):
 
 ```bash
-export FLASK_APP=main.py
+export FLASK_APP=app.py
 export FLASK_ENV=development  # optional auto-reload
 flask run
 ```
