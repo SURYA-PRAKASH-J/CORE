@@ -1,0 +1,9 @@
+Flask>=3.0.0
+google-genai>=0.3.0
+python-dotenv>=1.0.1
+requests>=2.32.0
+
+# Optional (legacy/local model support)
+# llama-cpp-python>=0.2.80
+# fuzzywuzzy>=0.18.0
+# python-Levenshtein>=0.25.0  # speed-up for fuzzywuzzy

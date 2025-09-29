@@ -1,6 +1,7 @@
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
+const chatMain = document.querySelector('.core-chat-main');
 const sendBtn = document.getElementById('send-btn');
 
 function appendMessage(text, sender) {
@@ -8,12 +9,42 @@ function appendMessage(text, sender) {
     msgDiv.className = `message ${sender}`;
     msgDiv.textContent = text;
     chatMessages.appendChild(msgDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    // Ensure the scroll happens on the scrollable container
+    if (chatMain) {
+        chatMain.scrollTop = chatMain.scrollHeight;
+    }
 }
 
 function setFormDisabled(disabled) {
     chatInput.disabled = disabled;
     sendBtn.disabled = disabled;
+}
+
+function addTypingIndicator() {
+    const typing = document.createElement('div');
+    typing.className = 'message bot typing';
+    const wrapper = document.createElement('div');
+    wrapper.className = 'typing-indicator';
+    for (let i = 0; i < 3; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'dot';
+        wrapper.appendChild(dot);
+    }
+    typing.appendChild(wrapper);
+    chatMessages.appendChild(typing);
+    if (chatMain) {
+        chatMain.scrollTop = chatMain.scrollHeight;
+    }
+    return typing;
+}
+
+function replaceTypingWithText(typingEl, text) {
+    if (!typingEl) return appendMessage(text, 'bot');
+    typingEl.classList.remove('typing');
+    typingEl.textContent = text;
+    if (chatMain) {
+        chatMain.scrollTop = chatMain.scrollHeight;
+    }
 }
 
 chatForm.addEventListener('submit', async (e) => {
@@ -24,6 +55,9 @@ chatForm.addEventListener('submit', async (e) => {
     chatInput.value = '';
     setFormDisabled(true);
 
+    // Show typing indicator while waiting for server reply
+    const typingEl = addTypingIndicator();
+
     try {
         const response = await fetch('/chat', {
             method: 'POST',
@@ -32,9 +66,9 @@ chatForm.addEventListener('submit', async (e) => {
         });
         if (!response.ok) throw new Error('Network error');
         const data = await response.json();
-        appendMessage(data.reply || 'No response', 'bot');
+        replaceTypingWithText(typingEl, data.reply || 'No response');
     } catch (err) {
-        appendMessage('Error: ' + err.message, 'bot');
+        replaceTypingWithText(typingEl, 'Error: ' + err.message);
     } finally {
         setFormDisabled(false);
         chatInput.focus();
