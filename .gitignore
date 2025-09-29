@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+env/
+build/
+dist/
+pip-wheel-metadata/
+
+# Testing/coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Env files
+.env
+.env.*
+!.sample.env
+
+# Logs
+*.log
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local data/memory
+memory.txt
+
+# Llama / models / caches
+llama.cpp/
+llama.cpp/models/
+*.gguf
+*.bin
+
+# Node (if any front-end present)
+node_modules/
+
+# Flask instance folder
+instance/
+
+# Secrets
+*.key
+*.pem
+
+# Tooling
+.qodo/
+
+# Misc
+archive/

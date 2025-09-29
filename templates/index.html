@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE — Premium AI Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Material+Icons&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <button class="sidebar-icon active" title="Chat">
+                <span class="material-icons">chat_bubble_outline</span>
+            </button>
+            <button class="sidebar-icon" title="History">
+                <span class="material-icons">history</span>
+            </button>
+            <button class="sidebar-icon" title="Settings">
+                <span class="material-icons">settings</span>
+            </button>
+            <button class="sidebar-icon" title="Theme">
+                <span class="material-icons">dark_mode</span>
+            </button>
+            <button class="sidebar-icon" title="Font Size">
+                <span class="material-icons">text_fields</span>
+            </button>
+        </nav>
+        <!-- Main Chat Container -->
+        <div class="core-chat-container">
+            <header class="core-header">
+                <span class="material-icons">memory</span>
+                <h1>CORE</h1>
+                <span class="core-subtitle">Premium AI Assistant</span>
+            </header>
+            <main class="core-chat-main">
+                <div id="chat-messages" class="core-chat-messages"></div>
+            </main>
+            <form id="chat-form" class="core-chat-form" autocomplete="off">
+                <input id="chat-input" type="text" placeholder="Type your command..." autocomplete="off" required />
+                <button id="send-btn" type="submit">
+                    <span class="material-icons">send</span>
+                </button>
+            </form>
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span class="status-dot"></span>
+                <span>Connected to <b>CORE</b> / Gemini</span>
+            </div>
+        </div>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
