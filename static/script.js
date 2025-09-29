@@ -1,3 +1,13 @@
+// Mobile sidebar toggle
+(function initSidebarToggle(){
+  const toggle = document.getElementById('sidebar-toggle');
+  if (!toggle) return;
+  toggle.addEventListener('click', () => {
+    const open = document.body.classList.toggle('sidebar-open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+})();
+
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatMessages = document.getElementById('chat-messages');
