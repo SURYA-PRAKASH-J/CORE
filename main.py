@@ -20,6 +20,7 @@ def index():
 def chat():
     data = request.get_json()
     user_message = data.get("message", "")
+    client_api_key = data.get("apiKey")  # optional, per-user key from UI
 
     # New: use rolling conversation memory instead of local AI extraction
     memory_block = memory_manager.get_recent_memory()
@@ -28,7 +29,7 @@ def chat():
         user_prompt=user_message,
     )
 
-    reply = gemini_ai_callback(prompt_for_model)
+    reply = gemini_ai_callback(prompt_for_model, api_key=client_api_key)
 
     # New: record the exchange so we keep only the last N conversation pairs
     memory_manager.record_exchange(user_message, reply)
@@ -44,12 +45,16 @@ def chat():
 
 
 
-def gemini_ai_callback(_prompt: str, _model: str= "gemini-2.5-pro") -> str:
-    api_key = os.getenv("GOOGLE_GENAI_API_KEY")
-    if not api_key:
+def gemini_ai_callback(_prompt: str, _model: str= "gemini-2.5-pro", api_key: str | None = None) -> str:
+    key = api_key or os.getenv("GOOGLE_GENAI_API_KEY")
+    if not key:
         # Fail fast with a clear message (returned to the client). You may prefer to log this instead.
         return "Server configuration error: missing GOOGLE_GENAI_API_KEY."
 
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(api_key=key)
     response = client.models.generate_content(model=_model, contents= _prompt + "Keep it short")
     return response.text
+
+@app.route("/instructions")
+def instructions():
+    return render_template("instructions.html")

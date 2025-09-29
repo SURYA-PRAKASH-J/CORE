@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CORE — Gemini API Key Instructions</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Material+Icons&display=swap" rel="stylesheet">
+  <style>
+    .instructions { max-width: 760px; margin: 2rem auto; background: var(--bg-elevated); padding: 1.5rem; border-radius: var(--radius); border: 1.5px solid var(--border); }
+    .instructions h1 { margin-top: 0; color: var(--text-main); }
+    .instructions a { color: var(--accent-soft); text-decoration: underline; }
+    .step { margin: 1rem 0; color: var(--text-muted); }
+    .back-link { display: inline-block; margin-top: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div class="instructions">
+    <h1>Generate a Gemini API Key</h1>
+    <div class="step">1. Open <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Google AI Studio — API Keys</a>.</div>
+    <div class="step">2. Sign in with your Google account, if prompted.</div>
+    <div class="step">3. Click "Create API key" and copy your key.</div>
+    <div class="step">4. Return to the chat page and paste your key into the input field. The key is stored in your browser (localStorage) and will be used for your requests.</div>
+    <div class="step">5. If you prefer server-wide configuration, set the environment variable <code>GOOGLE_GENAI_API_KEY</code> on the server.</div>
+
+    <a class="back-link" href="/">← Back to Chat</a>
+  </div>
+</body>
+</html>
