@@ -4,6 +4,69 @@ const chatMessages = document.getElementById('chat-messages');
 const chatMain = document.querySelector('.core-chat-main');
 const sendBtn = document.getElementById('send-btn');
 
+// Session and history persistence
+const SESSION_COOKIE_NAME = 'core_sid';
+const HISTORY_LIMIT = 200; // limit stored messages to avoid bloating localStorage
+
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()\[\]\\/\+^])/g, '\\$1') + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+function setCookie(name, value, days = 365) {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${d.toUTCString()}; path=/; SameSite=Lax`;
+}
+
+function randomId(len = 16) {
+    const chars = 'abcdef0123456789';
+    let out = '';
+    for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+}
+
+function getOrCreateSessionId() {
+    let sid = getCookie(SESSION_COOKIE_NAME);
+    if (!sid) {
+        sid = randomId(24);
+        setCookie(SESSION_COOKIE_NAME, sid);
+    }
+    return sid;
+}
+
+function historyKeyFor(sessionId) {
+    return `coreChatHistory_${sessionId}`;
+}
+
+function loadHistory(sessionId) {
+    try {
+        const raw = localStorage.getItem(historyKeyFor(sessionId));
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+        console.warn('Failed to load history:', e);
+        return [];
+    }
+}
+
+function saveHistory(sessionId, history) {
+    try {
+        const trimmed = history.slice(-HISTORY_LIMIT);
+        localStorage.setItem(historyKeyFor(sessionId), JSON.stringify(trimmed));
+    } catch (e) {
+        console.warn('Failed to save history:', e);
+    }
+}
+
+const sessionId = getOrCreateSessionId();
+let chatHistory = loadHistory(sessionId);
+
+function renderHistory(history) {
+    history.forEach(msg => appendMessage(msg.text, msg.sender));
+}
+
 function appendMessage(text, sender) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${sender}`;
@@ -47,11 +110,18 @@ function replaceTypingWithText(typingEl, text) {
     }
 }
 
+// Render existing history on load
+renderHistory(chatHistory);
+
 chatForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const userMsg = chatInput.value.trim();
     if (!userMsg) return;
     appendMessage(userMsg, 'user');
+    // Update history (user)
+    chatHistory.push({ sender: 'user', text: userMsg });
+    saveHistory(sessionId, chatHistory);
+
     chatInput.value = '';
     setFormDisabled(true);
 
@@ -62,13 +132,21 @@ chatForm.addEventListener('submit', async (e) => {
         const response = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: userMsg })
+            body: JSON.stringify({ message: userMsg, sessionId })
         });
         if (!response.ok) throw new Error('Network error');
         const data = await response.json();
-        replaceTypingWithText(typingEl, data.reply || 'No response');
+        const replyText = data.reply || 'No response';
+        replaceTypingWithText(typingEl, replyText);
+        // Update history (bot)
+        chatHistory.push({ sender: 'bot', text: replyText });
+        saveHistory(sessionId, chatHistory);
     } catch (err) {
-        replaceTypingWithText(typingEl, 'Error: ' + err.message);
+        const errText = 'Error: ' + err.message;
+        replaceTypingWithText(typingEl, errText);
+        // Update history (bot error)
+        chatHistory.push({ sender: 'bot', text: errText });
+        saveHistory(sessionId, chatHistory);
     } finally {
         setFormDisabled(false);
         chatInput.focus();
